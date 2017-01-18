@@ -11,26 +11,28 @@ from bs4 import BeautifulSoup
 soup = BeautifulSoup(page, "html.parser")
 
 #etsitään otsikot
-h2 = soup.find_all("h2")
+
+h2 = soup.find_all("div", class_="teaser-heading")
+
 
 #listätään otsikot listaan
 tab = []
 for i in h2:
-    strin = i.get_text()
-    tab.append(strin)
 
-# poistetaan listasta turhat välilyönnit
-stripped = []
-for otsikko in tab:
-    strip = otsikko.strip()
-    stripped.append(strip)
+    children = i.findChildren()
+    for child in children:
+        strin = child.get_text()
+        tab.append(strin.strip())
+
+
 
 # poistetaan lopun ei-otsikot
-montako_otsikkoa = len(stripped)-18
-stripped = stripped[:montako_otsikkoa]
+montako_otsikkoa = len(tab)
+stripped = tab
 
 #lasketaan ajatusviivat
 lask = 0
+
 for i in stripped:
     print(i)
     try:
@@ -40,7 +42,7 @@ for i in stripped:
         continue
 
 #välissä on kolme ei-otsikkoa yleensä
-otsikoita = len(stripped)-3
+otsikoita = len(stripped)
 
 #tulosteet
 print("\nOtsikoita yhteensä:", otsikoita)
@@ -49,7 +51,7 @@ print("Osuus: %.2f" % (lask/otsikoita))
 
 
 #tallennetaan otsikot tiedostoon
-tiedostonimi = time.strftime("%d.%m.%Y") + ".txt"
+tiedostonimi = time.strftime("%d.%m.%Y.") + time.strftime("%H.%M.%S") + ".txt"
 
 #otsikot
 f = open(tiedostonimi,'w')
@@ -71,11 +73,6 @@ f.write(str(lask/otsikoita))
 f.write("\n")
 
 f.close()
-
-
-
-
-
 
 
 
