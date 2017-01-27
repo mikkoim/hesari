@@ -4,37 +4,31 @@
 import urllib.request as urllib
 import time
 
+#___________Sivun prosessointi__________________
 #avataan sivu tarkasteltavaksi
 wiki = "http://www.hs.fi/"
 page = urllib.urlopen(wiki)
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(page, "html.parser")
 
-
 #etsitään otsikot
-
 h2 = soup.find_all("div", class_="teaser-heading")
 
-
-#listätään otsikot listaan
+#listätään otsikot listaan tab
 tab = []
 for i in h2:
-
+    #koska otsikkoteksti ei ole suoraan "teaser-heading"-taulukon alla
+    #haetaan taulukon alapuolelta otsikot ja talletetaan listaan
     children = i.findChildren()
     for child in children:
         strin = child.get_text()
         tab.append(strin.strip())
 
-
-
-# poistetaan lopun ei-otsikot
-montako_otsikkoa = len(tab)
-stripped = tab
-
+#____________Datan prosessointi____________________-
 #lasketaan ajatusviivat
 lask = 0
 
-for i in stripped:
+for i in tab:
     print(i)
     try:
         i.index("–")
@@ -42,10 +36,10 @@ for i in stripped:
     except ValueError:
         continue
 
-#välissä on kolme ei-otsikkoa yleensä
-otsikoita = len(stripped)
+#otsikkojen määrä yhteensä
+otsikoita = len(tab)
 
-#tulosteet
+#__________Tulosteet ja tallennus___________________
 print("\nOtsikoita yhteensä:", otsikoita)
 print("Otsikoita joissa väliviiva: ", lask)
 print("Osuus: %.2f" % (lask/otsikoita))
@@ -56,7 +50,7 @@ tiedostonimi = time.strftime("%d.%m.%Y.") + time.strftime("%H.%M.%S") + ".txt"
 
 #otsikot
 f = open(tiedostonimi,'w')
-for i in stripped:
+for i in tab:
     f.write(i)
     f.write("\n")
 
