@@ -10,6 +10,7 @@ page = urllib.urlopen(wiki)
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(page, "html.parser")
 
+
 #etsitään otsikot
 
 h2 = soup.find_all("div", class_="teaser-heading")
