@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 Skripti hakee Helsingin Sanomien etusivun pääotsikot, laskee niistä ajatusviivat ja tallentaa
 tämän tiedon tiedostoon
@@ -6,10 +7,12 @@ Mikko Impiö 2017
 """
 
 # tuo kirjastot
+
 import urllib.request as urllib
 import time
 import tweepy
 import schedule
+import sys
 from config import *
 
 class Viivanhakija:
@@ -21,7 +24,6 @@ class Viivanhakija:
         self.__osuus = self.__viivoilla/self.__otsikoita
 
     # ___________Sivun prosessointi__________________
-    @staticmethod
     def parse(self,url,otsikkotunniste):
         """
         :param url: tarkasteltavan sivun url-osoite
@@ -48,7 +50,6 @@ class Viivanhakija:
         return tab
 
     # ____________Datan prosessointi____________________
-    @staticmethod
     def process(self,data):
         """
         :param data: otsikkodata listana
@@ -76,6 +77,15 @@ class Viivanhakija:
             print(i)
 
 
+        print("\nOtsikoita yhteensä:", self.__otsikoita)
+        print("Otsikoita joissa väliviiva: ", self.__viivoilla)
+        print("Osuus: %.2f" % (self.__osuus))
+
+    def tulostatiedot(self):
+        """
+        tulostaa pelkän ajatusviivadatan
+        :return:
+        """
         print("\nOtsikoita yhteensä:", self.__otsikoita)
         print("Otsikoita joissa väliviiva: ", self.__viivoilla)
         print("Osuus: %.2f" % (self.__osuus))
@@ -154,27 +164,22 @@ def job():
 
     #twiittaa etusivun tiedot
     twitter(etusivu)
-
-    #etusivu.tulosta()
+    print("\nTulokset " + time.strftime("%H.%M.%S") + ":")
+    etusivu.tulostatiedot()
+    print("\nTwiitattu: \"" + etusivu.tulostatwiitti() + "\"\n")
     #tallentaa etusivun tiedostoon
     etusivu.tallenna()
 
 
 def main():
+    try:
+        schedule.every().day.at("02:05").do(job)
+        schedule.every(1).hours.do(job)
 
-    schedule.every().day.at("00:40").do(job)
-    schedule.every().day.at("01:00").do(job)
-    schedule.every().day.at("02:00").do(job)
-    schedule.every().day.at("03:00").do(job)
-    schedule.every().day.at("04:00").do(job)
-    schedule.every().day.at("12:00").do(job)
-    schedule.every().day.at("15:00").do(job)
-    schedule.every().day.at("18:00").do(job)
-    schedule.every().day.at("20:00").do(job)
-
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
+        while True:
+            sys.stdout.write("\r" + time.strftime("%H.%M.%S"))
+            schedule.run_pending()
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
 main()
