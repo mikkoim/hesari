@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 """
+28.1: twitterbotti valmis, twiittaa tulokset tunnin välein @ajatusviiva64.
+Tulossa vielä hienovalmistelua ja varsinainen twittertili
+
 Skripti hakee Helsingin Sanomien etusivun pääotsikot, laskee niistä ajatusviivat ja tallentaa
 tämän tiedon tiedostoon
 
@@ -19,9 +22,9 @@ class Viivanhakija:
 
     def __init__(self, url, tunniste):
         self.__data = self.parse(url,tunniste)
-        self.__viivoilla = self.process(self.__data)
-        self.__otsikoita = len(self.__data)
-        self.__osuus = self.__viivoilla/self.__otsikoita
+        self.__viivoilla = self.process(self.__data) #ajatusviivaotsikoiden määrä saadaan datasta
+        self.__otsikoita = len(self.__data) #otsikoiden kokonaismäärä
+        self.__osuus = self.__viivoilla/self.__otsikoita #prosenttiosuus
 
     # ___________Sivun prosessointi__________________
     def parse(self,url,otsikkotunniste):
@@ -54,7 +57,6 @@ class Viivanhakija:
         """
         :param data: otsikkodata listana
         :return: viivallisten otsikoiden määrä
-        :return: otsikoiden kokonaismäärä
         """
         # lasketaan ajatusviivat
         lask = 0
@@ -128,8 +130,8 @@ class Viivanhakija:
                   " – jopa {:.1f}% ({} kpl) sisältää ajatusviivan. #ajatusviiva @hsfi" \
             .format(self.__otsikoita, float(self.__osuus*100), self.__viivoilla)
         """
-        twiitti = str(time.strftime("%H.%M.%S")) + ": {}, {:.1f}, {}" \
-            .format(self.__otsikoita, float(self.__osuus*100), self.__viivoilla)
+        twiitti = str(time.strftime("%d.%m. @%H:%M")) + ": Otsikoita: {}/{} = {:.1f}%, " \
+            .format(self.__viivoilla, self.__otsikoita, float(self.__osuus*100))
         return twiitti
 
 def twitter(etusivu):
@@ -164,17 +166,28 @@ def job():
 
     #twiittaa etusivun tiedot
     twitter(etusivu)
+
+    #tulostaa tulokset ja twiitatun viestin
     print("\nTulokset " + time.strftime("%H.%M.%S") + ":")
     etusivu.tulostatiedot()
     print("\nTwiitattu: \"" + etusivu.tulostatwiitti() + "\"\n")
+
     #tallentaa etusivun tiedostoon
     etusivu.tallenna()
 
 
 def main():
     try:
-        schedule.every().day.at("02:05").do(job)
-        schedule.every(1).hours.do(job)
+
+        #tunnin välein twiitti
+        """
+        for i in range(24):
+            aika = str(i) + ":00"
+            schedule.every().day.at(aika).do(job)
+        """
+        for i in range(60):
+            aika = "10:" + str(i)
+            schedule.every().day.at(aika).do(job)
 
         while True:
             sys.stdout.write("\r" + time.strftime("%H.%M.%S"))
@@ -182,4 +195,5 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         pass
+
 main()
