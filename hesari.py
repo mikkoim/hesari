@@ -180,14 +180,17 @@ def main():
     try:
 
         #tunnin välein twiitti
-        """
+
         for i in range(24):
             aika = str(i) + ":00"
             schedule.every().day.at(aika).do(job)
+
+        #twiitti minuutin välein testitarkoituksia varten
         """
         for i in range(60):
             aika = "10:" + str(i)
             schedule.every().day.at(aika).do(job)
+        """
 
         while True:
             sys.stdout.write("\r" + time.strftime("%H.%M.%S"))
