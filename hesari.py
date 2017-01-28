@@ -7,9 +7,18 @@ Skripti hakee Helsingin Sanomien etusivun pääotsikot, laskee niistä ajatusvii
 tämän tiedon tiedostoon
 
 Mikko Impiö 2017
+
+Used libraries:
+Tweepy
+MIT License Copyright (c) 2013-2014 Joshua Roesslein
+https://github.com/tweepy/tweepy
+
+Schedule
+MIT License Copyright (c) 2013 Daniel Bader (http://dbader.org)
+https://github.com/dbader/schedule
 """
 
-# tuo kirjastot
+
 
 import urllib.request as urllib
 import time
@@ -188,7 +197,7 @@ def main():
         #twiitti minuutin välein testitarkoituksia varten
         """
         for i in range(60):
-            aika = "10:" + str(i)
+            aika = "XX:" + str(i)
             schedule.every().day.at(aika).do(job)
         """
 
